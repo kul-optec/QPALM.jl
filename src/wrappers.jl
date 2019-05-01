@@ -52,7 +52,7 @@ function setup!(
 
     # Check if parameters are nothing
     if ((A == nothing) & ( (bmin != nothing) | (bmax != nothing))) |
-        ((A != nothing) & ((bmin == nothing) | (bmax == nothing)))
+        ((A != nothing) & ((bmin == nothing) & (bmax == nothing)))
         error("A must be supplied together with bmin and bmax")
     end
 
