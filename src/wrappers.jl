@@ -10,7 +10,7 @@ mutable struct Model
     end
 end
 
-function Settings()
+function Settings(;kwargs...)
     s = Ref{QPALM.Settings}()
     ccall(
         (:qpalm_set_default_settings, LIBQPALM_PATH),
@@ -18,7 +18,11 @@ function Settings()
         (Ref{QPALM.Settings},),
         s
     )
-    return s[]
+    settings = s[]
+    for (k, v) in kwargs
+        setproperty!(settings, k, v)
+    end
+    return settings
 end
 
 function setup!(
@@ -28,6 +32,7 @@ function setup!(
     A::Maybe{AbstractMatrix} = nothing,
     bmin::Maybe{Vector{Float64}} = nothing,
     bmax::Maybe{Vector{Float64}} = nothing,
+    kwargs...
 )
     # Check problem dimensions
     if Q == nothing
@@ -105,7 +110,7 @@ function setup!(
     CHOLMOD_Q = CHOLMOD.Sparse(Q)
     CHOLMOD_A = CHOLMOD.Sparse(A)
 
-    settings = Settings()
+    settings = QPALM.Settings(kwargs...)
 
     data = QPALM.Data(
         n, m,

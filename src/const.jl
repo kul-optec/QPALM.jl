@@ -1,5 +1,3 @@
-const LIBQPALM_PATH = "../deps/libqpalm.dylib"
-
 const QPALM_INFTY = 1e20
 
 const SOLUTION_PRESENT = [:Solved, :Max_iter_reached]
