@@ -1,13 +1,13 @@
-using QPALM
-using Random
-using LinearAlgebra
-using SparseArrays
-
 using Test
 
-Random.seed!(0)
-
 @testset "Feasible" begin
+
+    using QPALM
+    using Random
+    using LinearAlgebra
+    using SparseArrays
+
+    Random.seed!(0)
 
     n, m = 10, 20
 
@@ -28,6 +28,7 @@ Random.seed!(0)
         b = [A[1:act, :]*x_star; A[act+1:end, :]*x_star + rand(m-act)]
 
         model = QPALM.Model()
+
         QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b)
         results = QPALM.solve!(model)
 

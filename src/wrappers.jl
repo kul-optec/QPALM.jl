@@ -10,19 +10,32 @@ mutable struct Model
     end
 end
 
-function Settings(;kwargs...)
-    s = Ref{QPALM.Settings}()
-    ccall(
-        (:qpalm_set_default_settings, LIBQPALM_PATH),
-        Nothing,
-        (Ref{QPALM.Settings},),
-        s
-    )
-    settings = s[]
-    for (k, v) in kwargs
-        setproperty!(settings, k, v)
+function Settings(model::Maybe{QPALM.Model} = nothing; kwargs...)
+    for k in keys(kwargs)
+        @assert k in fieldnames(QPALM.Settings) "Unknown setting: $k"
     end
-    return settings
+
+    default_settings =
+        if model == nothing
+            ds = Ref{QPALM.Settings}()
+            ccall(
+                (:qpalm_set_default_settings, LIBQPALM_PATH),
+                Nothing,
+                (Ref{QPALM.Settings},),
+                ds
+            )
+            ds[]
+        else
+            workspace = unsafe_load(model.workspace)
+            unsafe_load(workspace.settings)
+        end
+
+    merged_settings = [
+        k in keys(kwargs) ? kwargs[k] : getfield(default_settings, k)
+        for k in fieldnames(QPALM.Settings)
+    ]
+
+    return QPALM.Settings(merged_settings...)
 end
 
 function setup!(
@@ -110,7 +123,7 @@ function setup!(
     CHOLMOD_Q = CHOLMOD.Sparse(Q)
     CHOLMOD_A = CHOLMOD.Sparse(A)
 
-    settings = QPALM.Settings(kwargs...)
+    settings = QPALM.Settings(; kwargs...)
 
     data = QPALM.Data(
         n, m,
@@ -145,6 +158,45 @@ mutable struct Info
     run_time::Float64
 
     Info() = new()
+end
+
+function update!(
+    model::QPALM.Model;
+    q::Maybe{Vector{Float64}} = nothing,
+    bmin::Maybe{Vector{Float64}} = nothing,
+    bmax::Maybe{Vector{Float64}} = nothing,
+    kwargs...
+)
+    if q != nothing
+        ccall(
+            (:qpalm_update_q, LIBQPALM_PATH),
+            Cvoid,
+            (Ptr{QPALM.Workspace}, Ptr{Cfloat}),
+            model.workspace, pointer(q),
+        )
+    end
+
+    if bmin != nothing || bmax != nothing
+        ccall(
+            (:qpalm_update_bounds, LIBQPALM_PATH),
+            Cvoid,
+            (Ptr{QPALM.Workspace}, Ptr{Cfloat}, Ptr{Cfloat}),
+            model.workspace,
+            bmin != nothing ? pointer(bmin) : C_NULL,
+            bmax != nothing ? pointer(bmax) : C_NULL,
+        )
+    end
+
+    if length(kwargs) > 0
+        settings = Settings(model; kwargs...)
+
+        ccall(
+            (:qpalm_update_settings, LIBQPALM_PATH),
+            Cvoid,
+            (Ptr{QPALM.Workspace}, Ptr{QPALM.Settings}),
+            model.workspace, Ref(settings),
+        )
+    end
 end
 
 function copyto!(info::QPALM.Info, cinfo::QPALM.CInfo)

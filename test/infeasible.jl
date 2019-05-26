@@ -1,11 +1,11 @@
-using QPALM
-using Random
-
 using Test
 
-Random.seed!(0)
-
 @testset "Infeasible" begin
+
+    using QPALM
+    using Random
+
+    Random.seed!(0)
 
     n, m = 10, 20
 
