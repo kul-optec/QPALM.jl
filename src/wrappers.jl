@@ -82,13 +82,13 @@ function setup!(
     end
 
     if Q == nothing
-        Q = sparse([], [], [], n, n)
+        Q = sparse([], [], Float64[], n, n)
     end
     if q == nothing
         q = zeros(n)
     end
     if A == nothing
-        A = sparse([], [], [], m, n)
+        A = sparse([], [], Float64[], m, n)
         bmin = zeros(m)
         bmax = zeros(m)
     end
