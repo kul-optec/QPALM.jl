@@ -224,6 +224,19 @@ mutable struct Results
     Results() = new(Float64[], Float64[], QPALM.Info(), Float64[], Float64[])
 end
 
+function warm_start!(model::QPALM.Model,
+                     x_warm_start::Maybe{Vector{Float64}},
+                     y_warm_start::Maybe{Vector{Float64}})
+    ccall(
+        (:qpalm_warm_start, LIBQPALM_PATH),
+        Cvoid,
+        (Ptr{QPALM.Workspace}, Ptr{Float64}, Ptr{Float64}),
+        model.workspace,
+        x_warm_start != nothing ? pointer(x_warm_start) : C_NULL,
+        y_warm_start != nothing ? pointer(y_warm_start) : C_NULL,
+    )
+end
+
 function solve!(model::QPALM.Model, results::QPALM.Results=Results())
     ccall(
         (:qpalm_solve, LIBQPALM_PATH),
