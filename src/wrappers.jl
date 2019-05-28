@@ -227,6 +227,10 @@ end
 function warm_start!(model::QPALM.Model;
                      x_warm_start::Maybe{Vector{Float64}} = nothing,
                      y_warm_start::Maybe{Vector{Float64}} = nothing)
+    if model.workspace == C_NULL
+        error("QPALM Model not setup")
+    end
+
     ccall(
         (:qpalm_warm_start, LIBQPALM_PATH),
         Cvoid,
