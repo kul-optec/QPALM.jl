@@ -6,72 +6,46 @@ using Test
     using LinearAlgebra
     using SparseArrays
 
-    n, m = 2, 3
-    act = 3
-
-    Q = sparse(I, n, n)
-    A = sparse(ones(m, n))
-    q = ones(n)
-    bmin = -ones(m)
-    bmax = ones(m)
+    q = [0.1, 1.0]
+    A = sparse([1.0 0.0; 0.0 1.0; 1.0 1.0])
+    bmin = [0.0, 0.0, -Inf]
+    bmax = [Inf, Inf, 1.0]
 
     model = QPALM.Model()
 
-    QPALM.setup!(model, Q=Q, q=q, A=A, bmin=bmin, bmax=bmax)
+    QPALM.setup!(model, q=q, A=A, bmin=bmin, bmax=bmax)
 
-    @testset "Settings" begin
+    results = QPALM.solve!(model)
 
-        QPALM.update!(model; max_iter=42)
+    @test isapprox(results.x, [0.0, 0.0], atol=1e-6)
 
-        workspace = unsafe_load(model.workspace)
-        settings = unsafe_load(workspace.settings)
+    # @testset "Settings" begin
+    #
+    #     QPALM.update!(model; max_iter=1042)
+    #
+    #     settings = unsafe_load(workspace.settings)
+    #
+    #     @test settings.max_iter == 1042
+    #
+    # end
 
-        @test settings.max_iter == 42
+    @testset "Bounds" begin
+
+        QPALM.update!(model; bmin=[0.2, 0.0, -Inf])
+
+        results = QPALM.solve!(model)
+
+        @test isapprox(results.x, [0.2, 0.0], atol=1e-6)
 
     end
 
     @testset "Linear term" begin
 
-        q_new = similar(q)
+        QPALM.update!(model; q=[-0.1, 1.0])
 
-        workspace = unsafe_load(model.workspace)
-        data = unsafe_load(workspace.data)
+        results = QPALM.solve!(model)
 
-        QPALM.update!(model; q=2.0*ones(n))
-
-        unsafe_copyto!(pointer(q_new), data.q, n)
-        @test q_new ≈ 2.0*ones(n)
-
-    end
-
-    @testset "Bounds" begin
-
-        bmin_new = similar(bmin)
-        bmax_new = similar(bmax)
-
-        workspace = unsafe_load(model.workspace)
-        data = unsafe_load(workspace.data)
-
-        QPALM.update!(model; bmin=-2.0*ones(m))
-
-        unsafe_copyto!(pointer(bmin_new), data.bmin, m)
-        @test bmin_new ≈ -2.0*ones(m)
-        unsafe_copyto!(pointer(bmax_new), data.bmax, m)
-        @test bmax_new ≈ 1.0*ones(m)
-
-        QPALM.update!(model; bmax=3.0*ones(m))
-
-        unsafe_copyto!(pointer(bmin_new), data.bmin, m)
-        @test bmin_new ≈ -2.0*ones(m)
-        unsafe_copyto!(pointer(bmax_new), data.bmax, m)
-        @test bmax_new ≈ 3.0*ones(m)
-
-        QPALM.update!(model; bmin=-4.0*ones(m), bmax=4.0*ones(m))
-
-        unsafe_copyto!(pointer(bmin_new), data.bmin, m)
-        @test bmin_new ≈ -4.0*ones(m)
-        unsafe_copyto!(pointer(bmax_new), data.bmax, m)
-        @test bmax_new ≈ 4.0*ones(m)
+        @test isapprox(results.x, [1.0, 0.0], atol=1e-6)
 
     end
 
