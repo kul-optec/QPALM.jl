@@ -224,9 +224,9 @@ mutable struct Results
     Results() = new(Float64[], Float64[], QPALM.Info(), Float64[], Float64[])
 end
 
-function warm_start!(model::QPALM.Model,
-                     x_warm_start::Maybe{Vector{Float64}},
-                     y_warm_start::Maybe{Vector{Float64}})
+function warm_start!(model::QPALM.Model;
+                     x_warm_start::Maybe{Vector{Float64}} = nothing,
+                     y_warm_start::Maybe{Vector{Float64}} = nothing)
     ccall(
         (:qpalm_warm_start, LIBQPALM_PATH),
         Cvoid,
@@ -237,7 +237,7 @@ function warm_start!(model::QPALM.Model,
     )
 end
 
-function solve!(model::QPALM.Model, results::QPALM.Results=Results())
+function solve!(model::QPALM.Model, results::QPALM.Results=Results())::QPALM.Results
     ccall(
         (:qpalm_solve, LIBQPALM_PATH),
         Cvoid,
@@ -285,11 +285,12 @@ function solve!(model::QPALM.Model, results::QPALM.Results=Results())
         end
     end
 
-    if results.info.status == :Non_convex
-        results.info.obj_val = NaN
-    end
+    # An objective value is not calculated at this moment.
+    # if results.info.status == :Non_convex
+    #     results.info.obj_val = NaN
+    # end
 
-    results
+    return results
 end
 
 function cleanup!(model::QPALM.Model)
