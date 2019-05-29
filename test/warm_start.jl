@@ -6,44 +6,48 @@ using Test
     using LinearAlgebra
     using SparseArrays
 
-    n, m = 2, 3
-    act = 3
+    n, m = 10, 20
 
-    Q = sparse(I, n, n)
-    A = sparse(ones(m, n))
-    q = ones(n)
-    bmin = -ones(m)
-    bmax = ones(m)
+    act = 5
+    F = randn(n, n-1)
+    Q = sparse(F*F' + 1e-3*I)
+    A = sparse(randn(m, n))
+    x_star = randn(n)
+    y_star = [rand(act); zeros(m-act)]
+    q = -Q*x_star - A'*y_star
+    b = [A[1:act, :]*x_star; A[act+1:end, :]*x_star + rand(m-act)]
 
-
-    x0 = ones(n)
-    y0 = ones(m)
+    model = QPALM.Model()
+    QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b)
+    results = QPALM.solve!(model)
+    @test results.info.iter > 5
 
     @testset "Not setup" begin
         model = QPALM.Model()
 
-        @test_throws ErrorException QPALM.warm_start!(model, x_warm_start=x0)
+        @test_throws ErrorException QPALM.warm_start!(model, x_warm_start=results.x)
     end
 
     @testset "Normal usage (1)" begin
         model = QPALM.Model()
 
-        QPALM.setup!(model, Q=Q, q=q, A=A, bmin=bmin, bmax=bmax)
-        QPALM.warm_start!(model, x_warm_start=x0, y_warm_start=y0)
-
-        results = QPALM.solve!(model)
-        @test results.info.status == :Solved
+        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b)
+        QPALM.warm_start!(model, x_warm_start=results.x, y_warm_start=results.y)
+        res = QPALM.solve!(model)
+        @test res.info.status == :Solved
+        @test res.info.iter < results.info.iter
     end
 
     @testset "Normal usage (2)" begin
         model = QPALM.Model()
 
-        QPALM.setup!(model, Q=Q, q=q, A=A, bmin=bmin, bmax=bmax)
-        QPALM.warm_start!(model, y_warm_start=y0)
-        QPALM.warm_start!(model, x_warm_start=x0)
+        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b)
+        QPALM.warm_start!(model, y_warm_start=results.y)
+        QPALM.warm_start!(model, x_warm_start=results.x)
 
-        results = QPALM.solve!(model)
-        @test results.info.status == :Solved
+        res = QPALM.solve!(model)
+        @test res.info.status == :Solved
+        @test res.info.iter < results.info.iter
     end
 
 end
