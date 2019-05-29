@@ -5,11 +5,11 @@ using Test
     using QPALM
     using LinearAlgebra
     using SparseArrays
-using Random
+    using Random
 
-Random.seed!(0)
+    Random.seed!(0)
+
     n, m = 10, 20
-
     act = 5
     F = randn(n, n-1)
     Q = sparse(F*F' + 1e-3*I)
