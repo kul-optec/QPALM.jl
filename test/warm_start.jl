@@ -5,7 +5,9 @@ using Test
     using QPALM
     using LinearAlgebra
     using SparseArrays
+using Random
 
+Random.seed!(0)
     n, m = 10, 20
 
     act = 5
