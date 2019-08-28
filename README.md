@@ -11,9 +11,7 @@ From the Julia (>= 1.0) REPL, do
 ] add https://github.com/kul-forbes/QPALM.jl
 ```
 
-In order to use QPALM.jl, you will have to compile the QPALM solver as a
-shared library: please refer to the [documentation of QPALM](https://benny44.github.io/QPALM/)
-on how to do this. You will end up having a library file named `libqpalm.so`
+In order to use QPALM.jl, you will need the binaries, which you can find [here](https://bintray.com/benny44/generic/QPALM/1.0#files/). You will end up having a library file named `libqpalm.so`
 (on Linux), `libqpalm.dylib` (on macOS), or `libqpalm.dll` (on Windows), which
 you will have to copy as follows:
 
