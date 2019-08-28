@@ -76,6 +76,7 @@ struct Workspace
     temp_m::Ptr{Cdouble}
     temp_n::Ptr{Cdouble}
     sigma::Ptr{Cdouble}
+    nb_sigma_changed::Cc_int
     gamma::Cdouble
     Axys::Ptr{Cdouble}
     z::Ptr{Cdouble}
@@ -111,6 +112,8 @@ struct Workspace
     eps_pri::Cdouble
     eps_dua::Cdouble
     eps_dua_in::Cdouble
+    eps_abs_in::Cdouble
+    eps_rel_in::Cdouble
 
     delta_y::Ptr{Cdouble}
     Atdelta_y::Ptr{Cdouble}
