@@ -176,6 +176,10 @@ function update!(
         )
     end
 
+    # Convert lower and upper bounds from Julia infinity to OSQP infinity
+    bmin = max.(bmin, -QPALM_INFTY)
+    bmax = min.(bmax, QPALM_INFTY)
+    
     if bmin != nothing || bmax != nothing
         ccall(
             (:qpalm_update_bounds, LIBQPALM_PATH),
