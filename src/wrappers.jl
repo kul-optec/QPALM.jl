@@ -116,7 +116,7 @@ function setup!(
         A = sparse(A)
     end
 
-    # Convert lower and upper bounds from Julia infinity to OSQP infinity
+    # Convert lower and upper bounds from Julia infinity to QPALM infinity
     bmin = max.(bmin, -QPALM_INFTY)
     bmax = min.(bmax, QPALM_INFTY)
 
@@ -176,7 +176,7 @@ function update!(
         )
     end
 
-    # Convert lower and upper bounds from Julia infinity to OSQP infinity
+    # Convert lower and upper bounds from Julia infinity to QPALM infinity
     bmin = max.(bmin, -QPALM_INFTY)
     bmax = min.(bmax, QPALM_INFTY)
     
