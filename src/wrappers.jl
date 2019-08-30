@@ -1,3 +1,13 @@
+# @Author: Massimo De Mauri <massimo>
+# @Date:   2019-08-30T16:55:04+02:00
+# @Email:  massimo.demauri@gmail.com
+# @Filename: wrappers.jl
+# @Last modified by:   massimo
+# @Last modified time: 2019-08-30T16:56:00+02:00
+# @License: LGPL-3.0
+# @Copyright: {{copyright}}
+
+
 import Base.GC: @preserve
 
 mutable struct Model
@@ -176,6 +186,10 @@ function update!(
         )
     end
 
+    # Convert lower and upper bounds from Julia infinity to OSQP infinity
+    bmin = max.(bmin, -QPALM_INFTY)
+    bmax = min.(bmax, QPALM_INFTY)
+    
     if bmin != nothing || bmax != nothing
         ccall(
             (:qpalm_update_bounds, LIBQPALM_PATH),
