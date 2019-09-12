@@ -35,6 +35,8 @@ struct CInfo
     pri_res_norm::Cdouble
     dua_res_norm::Cdouble
     dua2_res_norm::Cdouble
+    objective::Cdouble
+    dual_objective::Cdouble
     setup_time::Cdouble
     solve_time::Cdouble
     run_time::Cdouble
@@ -42,6 +44,7 @@ end
 
 struct Settings
     max_iter::Cc_int
+    inner_max_iter::Cc_int
     eps_abs::Cdouble
     eps_rel::Cdouble
     eps_abs_in::Cdouble
@@ -51,7 +54,7 @@ struct Settings
     eps_dual_inf::Cdouble
     theta::Cdouble
     delta::Cdouble
-    tau_init::Cdouble
+    sigma_max::Ccdouble
     proximal::Cc_int
     gamma_init::Cdouble
     gamma_upd::Cdouble
@@ -59,7 +62,11 @@ struct Settings
     scaling::Cc_int
     nonconvex::Cc_int
     verbose::Cc_int
+    print_iter::Cc_int
     warm_start::Cc_int
+    reset_newton_iter::Cc_int
+    enable_dual_termination::Cc_int
+    dual_objective_limit::Ccdouble
 end
 
 struct Workspace
@@ -76,6 +83,7 @@ struct Workspace
     temp_m::Ptr{Cdouble}
     temp_n::Ptr{Cdouble}
     sigma::Ptr{Cdouble}
+    sqrt_sigma_max::Cdouble
     nb_sigma_changed::Cc_int
     gamma::Cdouble
     Axys::Ptr{Cdouble}
