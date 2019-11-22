@@ -130,6 +130,7 @@ function setup!(
         pointer(CHOLMOD_Q),
         pointer(CHOLMOD_A),
         pointer(q),
+        0,
         pointer(bmin), pointer(bmax)
     )
 
