@@ -54,7 +54,7 @@ struct Settings
     eps_dual_inf::Cdouble
     theta::Cdouble
     delta::Cdouble
-    sigma_max::Ccdouble
+    sigma_max::Cdouble
     proximal::Cc_int
     gamma_init::Cdouble
     gamma_upd::Cdouble
@@ -66,7 +66,7 @@ struct Settings
     warm_start::Cc_int
     reset_newton_iter::Cc_int
     enable_dual_termination::Cc_int
-    dual_objective_limit::Ccdouble
+    dual_objective_limit::Cdouble
 end
 
 struct Workspace
