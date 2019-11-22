@@ -18,6 +18,7 @@ struct Data
     Q::Ptr{CHOLMOD.C_Sparse}
     A::Ptr{CHOLMOD.C_Sparse}
     q::Ptr{Cdouble}
+    c::Cdouble
     bmin::Ptr{Cdouble}
     bmax::Ptr{Cdouble}
 end
@@ -67,6 +68,7 @@ struct Settings
     reset_newton_iter::Cc_int
     enable_dual_termination::Cc_int
     dual_objective_limit::Cdouble
+    time_limit::Cdouble
 end
 
 struct Workspace
