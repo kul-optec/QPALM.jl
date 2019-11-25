@@ -180,8 +180,12 @@ function update!(
     end
 
     # Convert lower and upper bounds from Julia infinity to QPALM infinity
-    bmin = max.(bmin, -QPALM_INFTY)
-    bmax = min.(bmax, QPALM_INFTY)
+    if bmin != nothing
+        bmin = max.(bmin, -QPALM_INFTY)
+    end
+    if bmax != nothing
+        bmax = min.(bmax, QPALM_INFTY)
+    end
     
     if bmin != nothing || bmax != nothing
         ccall(
@@ -266,7 +270,6 @@ function solve!(model::QPALM.Model, results::QPALM.Results=Results())::QPALM.Res
 
     n = data.n
     m = data.m
-
     copyto!(results.info, info)
 
     resize!(results.x, n)
