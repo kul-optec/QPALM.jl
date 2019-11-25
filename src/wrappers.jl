@@ -154,6 +154,8 @@ mutable struct Info
     pri_res_norm::Float64
     dua_res_norm::Float64
     dua2_res_norm::Float64
+    objective::Float64
+    dual_objective::Float64
     setup_time::Float64
     solve_time::Float64
     run_time::Float64
@@ -212,6 +214,8 @@ function copyto!(info::QPALM.Info, cinfo::QPALM.CInfo)
     info.pri_res_norm = cinfo.pri_res_norm
     info.dua_res_norm = cinfo.dua_res_norm
     info.dua2_res_norm = cinfo.dua2_res_norm
+    info.objective = cinfo.objective
+    info.dual_objective = cinfo.dual_objective
     info.setup_time = cinfo.setup_time
     info.solve_time = cinfo.solve_time
     info.run_time = cinfo.run_time

@@ -88,6 +88,7 @@ struct Workspace
     sqrt_sigma_max::Cdouble
     nb_sigma_changed::Cc_int
     gamma::Cdouble
+    gamma_maxed::Cc_int
     Axys::Ptr{Cdouble}
     z::Ptr{Cdouble}
     pri_res::Ptr{Cdouble}
