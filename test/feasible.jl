@@ -56,7 +56,7 @@ using Test
         b = A*x_star
 
         model = QPALM.Model()
-        QPALM.setup!(model, Q=Q, q=q, A=A, bmin=b, bmax=b)
+        QPALM.setup!(model, Q=Q, q=q, A=A, bmin=b, bmax=b; Dict{Symbol,Any}(:eps_rel=>0)...)
         results = QPALM.solve!(model)
 
         @test results.info.status == :Solved
