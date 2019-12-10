@@ -137,8 +137,8 @@ function setup!(
     model.workspace = ccall(
         (:qpalm_setup, LIBQPALM_PATH),
         Ptr{QPALM.Workspace},
-        (Ptr{QPALM.Data}, Ptr{QPALM.Settings}, Ptr{Nothing}),
-        Ref(data), Ref(settings), Ref(CHOLMOD.common_struct)
+        (Ptr{QPALM.Data}, Ptr{QPALM.Settings}),
+        Ref(data), Ref(settings)
     )
 
     if model.workspace == C_NULL
