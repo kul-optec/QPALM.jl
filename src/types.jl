@@ -56,6 +56,7 @@ struct Settings
     theta::Cdouble
     delta::Cdouble
     sigma_max::Cdouble
+    sigma_init::Cdouble
     proximal::Cc_int
     gamma_init::Cdouble
     gamma_upd::Cdouble
@@ -69,6 +70,10 @@ struct Settings
     enable_dual_termination::Cc_int
     dual_objective_limit::Cdouble
     time_limit::Cdouble
+    ordering::Cc_int
+    factorization_method::Cc_int
+    max_rank_update::Cc_int
+    max_rank_update_fraction::Cc_int
 end
 
 struct Workspace
@@ -85,6 +90,7 @@ struct Workspace
     temp_m::Ptr{Cdouble}
     temp_n::Ptr{Cdouble}
     sigma::Ptr{Cdouble}
+    sigma_inv::Ptr{Cdouble}
     sqrt_sigma_max::Cdouble
     nb_sigma_changed::Cc_int
     gamma::Cdouble
@@ -136,7 +142,7 @@ struct Workspace
     D_temp::Ptr{Cdouble}
     E_temp::Ptr{Cdouble}
 
-    chol::Ptr{Nothing}
+    solver::Ptr{Nothing}
     settings::Ptr{QPALM.Settings}
     scaling::Ptr{Nothing}
     solution::Ptr{QPALM.Solution}
