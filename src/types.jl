@@ -1,5 +1,9 @@
 using SparseArrays
-using SuiteSparse: CHOLMOD
+linsys = "ladel" #"ladel" or "cholmod"
+
+if linsys=="cholmod"
+    using SuiteSparse: CHOLMOD
+end
 
 const Cc_int = if Sys.WORD_SIZE == 64
     Clonglong
@@ -12,11 +16,31 @@ struct Carray_element
     i::Cc_int
 end
 
+struct ladel_sparse_matrix
+    nzmax::Cc_int
+    nrow::Cc_int
+    ncol::Cc_int
+    p::Ptr{Cc_int}
+    i::Ptr{Cc_int}
+    x::Ptr{Cdouble}
+    nz::Ptr{Cc_int}
+    values::Cc_int
+    symmetry::Cc_int
+end
+
+if linsys=="ladel"
+    sparse_matrix_ptr = Ref{QPALM.ladel_sparse_matrix}
+elseif linsys=="cholmod"
+    sparse_matrix_ptr = Ptr{CHOLMOD.C_Sparse}
+else
+    error("Unrecognised linsys")
+end
+
 struct Data
     n::Cc_int
     m::Cc_int
-    Q::Ptr{CHOLMOD.C_Sparse}
-    A::Ptr{CHOLMOD.C_Sparse}
+    Q::sparse_matrix_ptr
+    A::sparse_matrix_ptr
     q::Ptr{Cdouble}
     c::Cdouble
     bmin::Ptr{Cdouble}

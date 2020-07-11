@@ -38,6 +38,28 @@ function Settings(model::Maybe{QPALM.Model} = nothing; kwargs...)
     return QPALM.Settings(merged_settings...)
 end
 
+function to_sparse!(
+    M::Maybe{AbstractMatrix} = nothing
+)
+    if linsys=="ladel"
+        Sparse_M = QPALM.ladel_sparse_matrix(
+            length(M.rowval),
+            M.m,
+            M.n,
+            pointer(M.colptr),
+            pointer(M.rowval),
+            pointer(M.nzval),
+            C_NULL,
+            true,
+            0
+        )
+    elseif linsys=="cholmod"
+        Sparse_M = CHOLMOD.Sparse(M)
+    end
+    return Sparse_M
+end
+
+
 function setup!(
     model::QPALM.Model;
     Q::Maybe{AbstractMatrix} = nothing,
@@ -120,26 +142,49 @@ function setup!(
     bmin = max.(bmin, -QPALM_INFTY)
     bmax = min.(bmax, QPALM_INFTY)
 
-    CHOLMOD_Q = CHOLMOD.Sparse(Q)
-    CHOLMOD_A = CHOLMOD.Sparse(A)
-
+    Sparse_Q = to_sparse!(Q)
+    Sparse_A = to_sparse!(A)
+    
     settings = QPALM.Settings(; kwargs...)
 
-    data = QPALM.Data(
-        n, m,
-        pointer(CHOLMOD_Q),
-        pointer(CHOLMOD_A),
-        pointer(q),
-        0,
-        pointer(bmin), pointer(bmax)
-    )
+    if linsys=="ladel"
+        data = ccall(
+            (:qpalm_julia_set_data, LIBQPALM_PATH),
+            Ref{QPALM.Data},
+            (Cc_int, 
+             Cc_int, 
+             Ref{QPALM.ladel_sparse_matrix},
+             Ref{QPALM.ladel_sparse_matrix},
+             Ptr{Cfloat},
+             Cfloat,
+             Ptr{Cfloat},
+             Ptr{Cfloat}),
+             n, m, Ref(Sparse_Q), Ref(Sparse_A), 
+             pointer(q), 0, pointer(bmin), pointer(bmax)
+             )
 
-    model.workspace = ccall(
-        (:qpalm_setup, LIBQPALM_PATH),
-        Ptr{QPALM.Workspace},
-        (Ptr{QPALM.Data}, Ptr{QPALM.Settings}),
-        Ref(data), Ref(settings)
-    )
+        model.workspace = ccall(
+            (:qpalm_setup, LIBQPALM_PATH),
+            Ptr{QPALM.Workspace},
+            (Ref{QPALM.Data}, Ptr{QPALM.Settings}),
+            data, Ref(settings)
+            )
+    elseif linsys=="cholmod"
+        data = QPALM.Data(
+            n, m,
+            pointer(Sparse_Q),
+            pointer(Sparse_A),
+            pointer(q),
+            0,
+            pointer(bmin), pointer(bmax)
+        )
+        model.workspace = ccall(
+            (:qpalm_setup, LIBQPALM_PATH),
+            Ptr{QPALM.Workspace},
+            (Ptr{QPALM.Data}, Ptr{QPALM.Settings}),
+            Ref(data), Ref(settings)
+        )
+    end
 
     if model.workspace == C_NULL
         error("Error in QPALM setup")
