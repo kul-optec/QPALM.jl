@@ -1,5 +1,7 @@
 import Base.GC: @preserve
 
+using SparseArrays
+
 mutable struct Model
     workspace::Ptr{QPALM.Workspace}
 
@@ -70,7 +72,7 @@ function setup!(
     kwargs...
 )
     # Check problem dimensions
-    if Q == nothing
+    if Q == nothing 
         if q != nothing
             n = length(q)
         elseif A != nothing
@@ -103,9 +105,10 @@ function setup!(
         bmax = Inf * ones(m)
     end
 
-    if Q == nothing
+    if Q == nothing 
         Q = sparse([], [], Float64[], n, n)
     end
+
     if q == nothing
         q = zeros(n)
     end

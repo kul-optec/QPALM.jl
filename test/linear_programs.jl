@@ -65,7 +65,7 @@ using Test
 
         model = QPALM.Model()
 
-        QPALM.setup!(model, q=c, A=A_qpalm, bmin=bmin, bmax=bmax, eps_abs=1e-8, eps_rel=1e-8)
+        QPALM.setup!(model, q=c, A=A_qpalm, bmin=bmin, bmax=bmax, eps_abs=1e-8, eps_rel=1e-8, max_iter=100)
         results = QPALM.solve!(model)
 
         @test results.info.status == :Solved

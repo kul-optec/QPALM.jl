@@ -20,7 +20,7 @@ using Test
     b = [A[1:act, :]*x_star; A[act+1:end, :]*x_star + rand(m-act)]
 
     model = QPALM.Model()
-    QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b)
+    QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b; Dict{Symbol,Any}(:max_iter=>100)...)
     results = QPALM.solve!(model)
     @test results.info.iter > 5
 
@@ -33,7 +33,7 @@ using Test
     @testset "Normal usage (1)" begin
         model = QPALM.Model()
 
-        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b)
+        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b; Dict{Symbol,Any}(:max_iter=>100)...)
         QPALM.warm_start!(model, x_warm_start=results.x, y_warm_start=results.y)
         res = QPALM.solve!(model)
         @test res.info.status == :Solved
@@ -43,7 +43,7 @@ using Test
     @testset "Normal usage (2)" begin
         model = QPALM.Model()
 
-        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b)
+        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b; Dict{Symbol,Any}(:max_iter=>100)...)
         QPALM.warm_start!(model, y_warm_start=results.y)
         QPALM.warm_start!(model, x_warm_start=results.x)
 

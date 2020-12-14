@@ -14,7 +14,7 @@ using Test
     model = QPALM.Model()
 
     
-    QPALM.setup!(model, q=q, A=A, bmin=bmin, bmax=bmax; Dict{Symbol,Any}(:eps_rel=>0,:eps_abs=>1e-6)...)
+    QPALM.setup!(model, q=q, A=A, bmin=bmin, bmax=bmax; Dict{Symbol,Any}(:eps_rel=>0,:eps_abs=>1e-6,:max_iter=>100)...)
 
     results = QPALM.solve!(model)
 

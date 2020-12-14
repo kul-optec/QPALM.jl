@@ -29,7 +29,7 @@ using Test
 
         model = QPALM.Model()
 
-        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b)
+        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b; Dict{Symbol,Any}(:max_iter=>100)...)
         results = QPALM.solve!(model)
 
         @test results.info.status == :Solved
@@ -38,6 +38,7 @@ using Test
         @test maximum(max.(A * results.x - b, 0.0)) <= 1e-4
         @test abs(dot(results.y, A * results.x - b)) <= 1e-4
         @test norm(Q * results.x + q + A' * results.y, Inf) <= 1e-4
+
 
     end
 
@@ -56,12 +57,13 @@ using Test
         b = A*x_star
 
         model = QPALM.Model()
-        QPALM.setup!(model, Q=Q, q=q, A=A, bmin=b, bmax=b; Dict{Symbol,Any}(:eps_rel=>0)...)
+        QPALM.setup!(model, Q=Q, q=q, A=A, bmin=b, bmax=b; Dict{Symbol,Any}(:eps_rel=>0,:max_iter=>100)...)
         results = QPALM.solve!(model)
 
         @test results.info.status == :Solved
         @test norm(A*results.x - b, Inf) <= 1e-4
         @test norm(Q*results.x + q + A'*results.y, Inf) <= 1e-4
+
 
     end
 
