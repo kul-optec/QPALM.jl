@@ -1,11 +1,7 @@
 module QPALM
 
-const depsfile = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
-if isfile(depsfile)
-    include(depsfile)
-else
-    error("QPALM not properly installed. Please run Pkg.build(\"QPALM\").")
-end
+using QPALM_jll
+const LIBQPALM_PATH = QPALM_jll.libqpalm_path
 
 const Maybe{T} = Union{T, Nothing} where T
 
