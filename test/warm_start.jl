@@ -30,23 +30,11 @@ using Test
         @test_throws ErrorException QPALM.warm_start!(model, x_warm_start=results.x)
     end
 
-    @testset "Normal usage (1)" begin
+    @testset "Normal usage" begin
         model = QPALM.Model()
 
         QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b; Dict{Symbol,Any}(:max_iter=>100)...)
         QPALM.warm_start!(model, x_warm_start=results.x, y_warm_start=results.y)
-        res = QPALM.solve!(model)
-        @test res.info.status == :Solved
-        @test res.info.iter < results.info.iter
-    end
-
-    @testset "Normal usage (2)" begin
-        model = QPALM.Model()
-
-        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b; Dict{Symbol,Any}(:max_iter=>100)...)
-        QPALM.warm_start!(model, y_warm_start=results.y)
-        QPALM.warm_start!(model, x_warm_start=results.x)
-
         res = QPALM.solve!(model)
         @test res.info.status == :Solved
         @test res.info.iter < results.info.iter
