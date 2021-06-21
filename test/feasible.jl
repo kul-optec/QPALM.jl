@@ -29,16 +29,16 @@ using Test
 
         model = QPALM.Model()
 
-        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b; Dict{Symbol,Any}(:max_iter=>100)...)
+        tol = 1e-4
+        QPALM.setup!(model, Q=Q, q=q, A=A, bmax=b; Dict{Symbol,Any}(:eps_rel=>0,:eps_abs=>tol,:max_iter=>100)...)
         results = QPALM.solve!(model)
 
         @test results.info.status == :Solved
 
-        @test maximum(-min.(results.y, 0.0)) <= 1e-4
-        @test maximum(max.(A * results.x - b, 0.0)) <= 1e-4
-        @test abs(dot(results.y, A * results.x - b)) <= 1e-4
-        @test norm(Q * results.x + q + A' * results.y, Inf) <= 1e-4
-
+        @test maximum(-min.(results.y, 0.0)) <= tol
+        @test maximum(max.(A * results.x - b, 0.0)) <= tol
+        @test abs(dot(results.y, A * results.x - b)) <= tol
+        @test norm(Q * results.x + q + A' * results.y, Inf) <= tol
 
     end
 
@@ -56,13 +56,15 @@ using Test
         q = -Q*x_star - A'*y_star
         b = A*x_star
 
+        tol = 1e-4
+
         model = QPALM.Model()
-        QPALM.setup!(model, Q=Q, q=q, A=A, bmin=b, bmax=b; Dict{Symbol,Any}(:eps_rel=>0,:max_iter=>100)...)
+        QPALM.setup!(model, Q=Q, q=q, A=A, bmin=b, bmax=b; Dict{Symbol,Any}(:eps_rel=>0,:eps_abs=>tol,:max_iter=>100)...)
         results = QPALM.solve!(model)
 
         @test results.info.status == :Solved
-        @test norm(A*results.x - b, Inf) <= 1e-4
-        @test norm(Q*results.x + q + A'*results.y, Inf) <= 1e-4
+        @test norm(A*results.x - b, Inf) <= tol
+        @test norm(Q*results.x + q + A'*results.y, Inf) <= tol
 
 
     end
