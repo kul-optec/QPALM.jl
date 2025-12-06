@@ -369,19 +369,13 @@ function MOI.get(optimizer::Optimizer, attr::MOI.DualStatus)
     return _DUAL_STATUS_MAP[optimizer.result.info.status_val]
 end
 
-# FIXME check QPALM's convention vs MOI's convention
-_flip_dual(y, ::Type{MOI.EqualTo{Float64}}) = y
-_flip_dual(y, ::Type{MOI.GreaterThan{Float64}}) = -y
-_flip_dual(y, ::Type{MOI.LessThan{Float64}}) = y
-_flip_dual(y, ::Type{MOI.Interval{Float64}}) = y
-
 function MOI.get(
     optimizer::Optimizer,
     attr::MOI.ConstraintDual,
     ci::MOI.ConstraintIndex{MOI.ScalarAffineFunction{Float64},S},
 ) where {S}
     MOI.check_result_index_bounds(optimizer, attr)
-    return _flip_dual(_flip_sense(optimizer, optimizer.result.y[ci.value]), S)
+    return _flip_sense(optimizer, optimizer.result.y[ci.value])
 end
 
 function MOI.get(optimizer::Optimizer, ::MOI.ResultCount)
