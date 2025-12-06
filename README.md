@@ -39,3 +39,12 @@ to use. They have the same name and type as the underlying C API,
 so please refer to [QPALM's documentation](https://kul-optec.github.io/QPALM/Doxygen/structQPALMSettings.html)
 on how to set these and their semantics. Leaving the settings unspecified
 will run the solver with default options.
+
+## Use with JuMP
+
+To use QPALM with JuMP, use `QPALM.Optimizer`:
+
+```julia
+using JuMP, QPALM
+model = Model(QPALM.Optimizer)
+```
