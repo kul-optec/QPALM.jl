@@ -8,5 +8,6 @@ const Maybe{T} = Union{T, Nothing} where T
 include("const.jl")
 include("types.jl")
 include("wrappers.jl")
+include("MOI_wrapper.jl")
 
 end # module
