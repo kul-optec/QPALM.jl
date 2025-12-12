@@ -42,6 +42,10 @@ will run the solver with default options.
 
 ## Use with JuMP
 
+> [!WARNING]
+> The values of `dual` and `objective_dual` of QPALM currently do not
+> seem to be consistent with JuMP's convention. Help is welcome to figure out the issue.
+
 To use QPALM with JuMP, use `QPALM.Optimizer`:
 
 ```julia
