@@ -200,6 +200,12 @@ function MOI.copy_to(dest::Optimizer, src::OptimizerCache)
         options = copy(options)
         options[:verbose] = 0
     end
+    @show size(A)
+#    if size(A, 1) == 0 && haskey(options, :enable_dual_termination) && options[:enable_dual_termination]
+#        # Otherwise throws: LADEL ERROR: MATRIX (POSSIBLY) NOT FULL RANK (diagonal element of 0.000000e+00)
+#        @warn("Disabling `enable_dual_termination`, not supported for a problem with no constraint")
+#        options[:enable_dual_termination] = false
+#    end
     setup!(
         dest.model;
         Q,
