@@ -44,8 +44,6 @@ function test_runtests()
             MOI.SolverVersion,
             MOI.VariableBasisStatus,
             MOI.ConstraintBasisStatus,
-            MOI.DualObjectiveValue, # FIXME
-            MOI.ConstraintDual, # FIXME
         ],
     )
     MOI.Test.runtests(

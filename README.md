@@ -42,9 +42,9 @@ will run the solver with default options.
 
 ## Use with JuMP
 
-> [!WARNING]
-> The values of `dual` and `objective_dual` of QPALM currently do not
-> seem to be consistent with JuMP's convention. Help is welcome to figure out the issue.
+> [!INFO]
+> For the dual values to be computed and be available with `JuMP.dual` and `JuMP.objective_dual`,
+> you need set the attribute `enable_dual_termination` before calling `JuMP.optimize!` as shown below.
 
 To use QPALM with JuMP, use `QPALM.Optimizer`:
 
@@ -52,5 +52,5 @@ To use QPALM with JuMP, use `QPALM.Optimizer`:
 using JuMP, QPALM
 model = Model(QPALM.Optimizer)
 # If duals are needed
-set_optimizer_attribute(model, "enable_dual_termination", true)
+set_attribute(model, "enable_dual_termination", true)
 ```

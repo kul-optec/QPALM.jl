@@ -46,6 +46,7 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
     m::Int
     n::Int
     result::Union{Nothing,Results}
+    has_dual::Bool
     objective_constant::Float64
     max_sense::Bool
     silent::Bool
@@ -59,6 +60,7 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
             0,
             0,
             nothing,
+            false,
             0,
             false,
             false,
@@ -207,6 +209,7 @@ function MOI.copy_to(dest::Optimizer, src::OptimizerCache)
         bmax=row_bounds.upper,
         options...,
     )
+    dest.has_dual = false
     dest.m, dest.n = size(A)
     dest.start_x = nothing
     dest.start_y = nothing
@@ -321,6 +324,9 @@ end
 
 function MOI.get(optimizer::Optimizer, attr::MOI.DualObjectiveValue)
     MOI.check_result_index_bounds(optimizer, attr)
+    if !optimizer.has_dual
+        return NaN
+    end
     return _flip_sense(optimizer, optimizer.result.info.dual_objective) + optimizer.objective_constant
 end
 
@@ -363,7 +369,7 @@ const _DUAL_STATUS_MAP = Dict{Int,MOI.ResultStatusCode}(
 )
 
 function MOI.get(optimizer::Optimizer, attr::MOI.DualStatus)
-    if attr.result_index > MOI.get(optimizer, MOI.ResultCount())
+    if !optimizer_has_dual || attr.result_index > MOI.get(optimizer, MOI.ResultCount())
         return MOI.NO_SOLUTION
     end
     return _DUAL_STATUS_MAP[optimizer.result.info.status_val]
@@ -375,6 +381,9 @@ function MOI.get(
     ci::MOI.ConstraintIndex{MOI.ScalarAffineFunction{Float64},S},
 ) where {S}
     MOI.check_result_index_bounds(optimizer, attr)
+    if !optimizer.has_dual
+        return NaN
+    end
     return _flip_sense(optimizer, optimizer.result.y[ci.value])
 end
 
