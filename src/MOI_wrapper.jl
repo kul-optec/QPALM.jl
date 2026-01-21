@@ -369,7 +369,7 @@ const _DUAL_STATUS_MAP = Dict{Int,MOI.ResultStatusCode}(
 )
 
 function MOI.get(optimizer::Optimizer, attr::MOI.DualStatus)
-    if !optimizer_has_dual || attr.result_index > MOI.get(optimizer, MOI.ResultCount())
+    if !optimizer.has_dual || attr.result_index > MOI.get(optimizer, MOI.ResultCount())
         return MOI.NO_SOLUTION
     end
     return _DUAL_STATUS_MAP[optimizer.result.info.status_val]
