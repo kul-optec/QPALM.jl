@@ -51,4 +51,6 @@ To use QPALM with JuMP, use `QPALM.Optimizer`:
 ```julia
 using JuMP, QPALM
 model = Model(QPALM.Optimizer)
+# If duals are needed
+set_optimizer_attribute(model, "enable_dual_termination", true)
 ```
