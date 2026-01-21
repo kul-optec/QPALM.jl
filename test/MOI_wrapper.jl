@@ -35,6 +35,7 @@ function test_runtests()
     @test model.optimizer.model.model_cache isa
           MOI.Utilities.UniversalFallback{QPALM.OptimizerCache}
     MOI.set(model, MOI.Silent(), true)
+    MOI.set(model, MOI.RawOptimizerAttribute("enable_dual_termination"), true)
     config = MOI.Test.Config(;
         atol = 1e-3,
         rtol = 1e-3,
