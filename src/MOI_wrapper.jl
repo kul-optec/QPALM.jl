@@ -99,7 +99,7 @@ function MOI.set(optimizer::Optimizer, param::MOI.RawOptimizerAttribute, value)
     if !MOI.supports(optimizer, param)
         throw(MOI.UnsupportedAttribute(param))
     end
-    setfield!(optimizer.options, Symbol(param.name), value)
+    optimizer.options[Symbol(param.name)] = value
     return
 end
 
@@ -107,7 +107,7 @@ function MOI.get(optimizer::Optimizer, param::MOI.RawOptimizerAttribute)
     if !MOI.supports(optimizer, param)
         throw(MOI.UnsupportedAttribute(param))
     end
-    return getfield(optimizer.parameters, Symbol(param.name))
+    return optimizer.parameters[Symbol(param.name)]
 end
 
 # MOI.Silent
